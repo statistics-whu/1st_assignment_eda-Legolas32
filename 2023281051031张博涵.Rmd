@@ -1,0 +1,144 @@
+---
+title: "First Homework 2023281051031"
+author: "Legolas"
+date: "2023-10-19"
+output:
+  pdf_document:
+    latex_engine: xelatex
+  word_document:
+    toc: yes
+  html_document:
+    code_folding: show
+    fig_caption: yes
+    fig_width: 10
+    highlight: tango
+    number_sections: yes
+    theme: cosmo
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(ggplot2)
+library(readr)
+library(corrplot)
+library(showtext)
+showtext_auto(enable=TRUE)
+```
+
+# 主要发现
+
+1.  发现1:白沙洲、盘龙城、四新等地区二手房数量位列前三
+
+2.  发现2:300万以上二手房逐渐减少
+
+3.  发现3:毛坯二手房，临近地铁，面积越大单价越高；而非地铁房，150面积时单价最高，而后面积与单价呈反比
+
+# 数据介绍
+
+本报告**链家**数据获取方式如下：
+
+报告人在2023年9月12日获取了[链家武汉二手房网站](https://wh.lianjia.com/ershoufang/)数据。
+
+-   链家二手房网站默认显示100页，每页30套房产，因此本数据包括3000套房产信息；
+
+-   数据包括了页面可见部分的文本信息，具体字段及说明见作业说明。
+
+**说明：**数据仅用于教学；由于不清楚链家数据的展示规则，因此数据可能并不是武汉二手房市场的随机抽样，结论很可能有很大的偏差，甚至可能是错误的。
+
+```{r}
+lj1<- read_csv("2023-09-12_cleaned.csv")
+theme_set(theme(text = element_text(family="",size = 10))) 
+summary(cars)
+```
+
+# 数据概览
+
+数据表`(lj1)`共包括`r names(lj1)`等`r ncol(lj1)`个变量,共`r nrow(lj1)`行。表的前10行示例如下：
+
+```{r}
+head(lj1[,1:10]) 
+```
+
+各变量的简短信息：
+
+```{r}
+glimpse(lj1)
+```
+
+各变量的简短统计：
+
+```{r}
+summary(lj1)
+```
+
+可以看到：
+
+-   直观结论1 当前数据集中有11个字符型变量，7个数字变量
+
+-   直观结论2 总价在10.6万元至1380万之间，其中平均总价为155.9万元，总价中位数为137万元
+
+-   直观结论3
+
+# 探索性分析
+
+```{r}
+lj1 %>% 
+  group_by(property_region)%>%
+  summarise(n=n()) %>%
+  arrange(desc(n))%>%
+  head(10)%>%
+ggplot(aes(fct_reorder(property_region,-n),n))+
+  geom_col(color="blue")
+```
+
+## 变量区域的数值描述与图形
+
+发现：
+
+-   发现1：白沙洲、盘龙城、四新等地区二手房数量位列前三
+
+-   发现2：
+
+```{r}
+lj_filtered<- lj1%>%
+  filter(lj1[["price_ttl"]]<=500)
+ggplot(lj_filtered,aes(x=price_ttl))+geom_boxplot()
+```
+
+## 变量总价的数值描述与图形
+
+发现：
+
+-   发现1：总价500万以内，中位数在140万左右；
+
+-   发现2：300万以上二手房逐渐减少
+
+```{r}
+
+```
+
+## 变量总价的数值描述与图形
+
+## 探索问题：
+
+发现：
+
+-   发现1
+
+-   发现2
+
+```{r}
+ggplot(data=lj_filtered)+
+  geom_smooth(mapping=aes(x=building_area,y=price_sqm))+
+  facet_grid(decoration~near_subway)
+```
+
+## 探索问题2：装修与近地铁分类，房屋面积与单价关系
+
+发现：
+
+-   发现1：精装条件下，无论是否靠近地铁，单价先与房屋面积关联较小，后随着面积增大而逐渐下降
+
+-   发现2：毛坯二手房，临近地铁，面积越大单价越高；而非地铁房，150面积时单价最高，而后面积与单价呈反比
